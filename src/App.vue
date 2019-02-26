@@ -17,24 +17,24 @@ export default {
   watch:{
     'this.$store.state.token':{
       handler:function(){
+        console.log("app_token:",this.$store.state.token)
         this.init();
       }
     }
   },
   methods: {
+    //状态判断，跳转路由
     init() {
-      if (this.$store.state.token) {
+      if (!this.$store.state.token) {
         this.$router.push({
-          name: "HelloWorld"
-        });
-      } else if (!this.$store.state.token) {
-        this.$router.push({
-          name: "Login"
+          name: ""
+          // name:"Entering"
         });
       }
     }
   },
   created() {
+    console.log("statestate：",this.$store.state)
     this.init();
   }
 };

@@ -10,13 +10,13 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/apis': {    //将https://www.xiang7.net印射为/apis
-        target: 'https://www.xiang7.net/',   // 接口域名
-          secure: false,  // 如果是https接口，需要配置这个参数
-          changeOrigin: true,  //是否跨域
-          pathRewrite: {
-              '^/apis': ''   //需要rewrite的,
-          }              
+      '/api': {
+        target: 'https://www.xiang7.net/',  //正式服
+        // target:'http://120.78.70.187:9081/',     //测试服
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
       }
     },
 
