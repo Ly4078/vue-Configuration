@@ -64,6 +64,7 @@ export default {
   methods: {
     handtoken() {
       this.$store.commit("setToken", this.msg);
+      console.log('----------------------测试');
     },
     //点击登陆，校验表单
     submitForm(formName) {
