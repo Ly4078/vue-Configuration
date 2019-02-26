@@ -82,9 +82,9 @@ export default {
       this.$store.commit("setshopInfo", {});
       this.$store.commit("setToken", "");
       localStorage.setItem("TOKEN", "");
-      this.isverification="";
-      this.ruleForm.mobile="";
-      this.ruleForm.verification="";
+      this.isverification = "";
+      this.ruleForm.mobile = "";
+      this.ruleForm.verification = "";
       this.$refs[formName].resetFields();
     },
     //发送短信验证码
@@ -177,7 +177,9 @@ export default {
         .get("website/shop/approve/get/" + this.$store.state.userInfo.shopId)
         .then(res => {
           this.$store.commit("setshopInfo", res.data.data);
-          console.log("state:", this.$store.state);
+          this.$router.push({
+            name: "Home"
+          });
         });
     }
   }
