@@ -31,7 +31,7 @@
           >
             <i class="el-icon-plus avatar-uploader-icon" @click="changefile(2)"></i>
           </el-upload>
-          <div class="legend">点击上传其它主图</div>
+          <div class="legend">点击上传商品轮播图</div>
         </div>
       </el-form-item>
       <el-form-item label="商品名称：" prop="spuName">
@@ -364,10 +364,6 @@ export default {
     id: String
   },
   watch: {
-    id: function() {
-      console.log('id:',this.id)
-      
-    },
     isspike: function() {
       if (!this.isspike && !this.isbargain) {
         this.isspike = !this.isspike;
@@ -392,7 +388,6 @@ export default {
     },
     //数据转换
     conversion() {
-      console.log("dishdata:", this.dishdata);
       this.goods.picUrls = [];
       this.goods.goodsSkuPics = [];
       this.goods.spike.ruleDesc = [];
@@ -409,8 +404,8 @@ export default {
       this.data.goodsSpuInVo.id = this.dishdata.goodsSpuOut.id;
       this.goods.title = this.dishdata.goodsSpuOut.goodsSpuDesc.title;
       this.data.goodsSkuSpecValue.id =  this.dishdata.goodsSkuSpecValues[0].id;
-      this.data.goodsSpuInVo.goodsSpuDesc.id = this.dishdata.goodsSpuOut.goodsSpecs[0].id;
-      this.data.goodsSpuInVo.goodsSpuSpec.id = this.dishdata.goodsSpuOut.goodsSpuDesc.id;
+      this.data.goodsSpuInVo.goodsSpuDesc.id = this.dishdata.goodsSpuOut.goodsSpuDesc.id;
+      this.data.goodsSpuInVo.goodsSpuSpec.id = this.dishdata.goodsSpuOut.goodsSpecs[0].id;
 
       if (this.dishdata.goodsCategory && this.dishdata.goodsCategory.parentId) {
         this.goods.categoryId.push(this.dishdata.goodsCategory.parentId);
@@ -686,7 +681,6 @@ export default {
         }
         _goodsSkuPics = _goodsSkuPics.substring(0, _goodsSkuPics.length - 1);
       }
-      console.log('picUrls:',this.goods.picUrls)
       _content += "<p>" + this.goods.title + "</p>";
       if (this.goods.picUrls && this.goods.picUrls.length > 0) {
         for (let i in this.goods.picUrls) {
@@ -726,7 +720,6 @@ export default {
       this.data.goodsSpuInVo.goodsSpuDesc.title = this.goods.title;
       this.data.goodsSpuInVo.goodsSpuDesc.content = _content;
 
-      console.log('content:',this.data.goodsSpuInVo.goodsSpuDesc.content)
       if(!this.data.id){
         delete this.data.id;
       }
@@ -808,13 +801,11 @@ export default {
       }
 
       this.data.json = "json";
-      console.log("data:", this.data);
       if (this.id) {
         _Url = "app/goodsSku/updateGoodsSkuAndAct";
       } else {
         _Url = "app/goodsSku/addGoodsSkuAndAct";
       }
-      console.log("_Url:", _Url);
       this.$http.post(_Url, this.data).then(res => {
         this.$message.success("编辑商品成功!");
         if (this.id) {
@@ -826,7 +817,6 @@ export default {
     }
   },
   created() {
-    console.log("shopid:", this.$store.state.shopInfo.id);
     this.getcategory();
     if(this.id){
         this.getproductdetails();
