@@ -14,18 +14,29 @@ Axios.interceptors.request.use(
   config => {
     // 设置以 form 表单的形式提交参数，如果以 JSON 的形式提交表单，可忽略
     if (config.method === "post") {
-      // JSON 转换为 FormData
-      const formData = new FormData();
-      Object.keys(config.data).forEach(key =>
-        formData.append(key, config.data[key])
-      );
-      config.data = formData;
+      if (config.data.json) {
+        config.headers={
+          "Content-Type": "application/json"
+        }
+      } else {
+        // JSON 转换为 FormData
+        const formData = new FormData();
+        Object.keys(config.data).forEach(key =>
+          formData.append(key, config.data[key])
+        );
+        config.data = formData;
+        config.headers={
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
     }
     // 下面会说在什么时候存储 token
-    if (localStorage.getItem('TOKEN')) {
-      console.log("token:",localStorage.getItem('TOKEN'))
-      config.headers.Authorization = localStorage.getItem('TOKEN');
+    if (localStorage.getItem("TOKEN")) {
+      config.headers.Authorization = localStorage.getItem("TOKEN");
     }
+    // if(config.data.json){
+    //   delete config.data.json;
+    // }
     return config;
   },
   error => {
@@ -42,18 +53,16 @@ Axios.interceptors.response.use(
     //    alert(res.error_msg)
     //    return Promise.reject(res)
     // }
-    console.log("res:",res)
     if (res.data.code != 0) {
-      
-      if(res.error_msg){
+      if (res.error_msg) {
         alert(res.error_msg);
       }
-      console.log("error:",res.error_msg)
       return Promise.reject(res);
     }
     return res;
   },
   error => {
+    console.log("error:", error);
     if (error.response.status === 401) {
       // 401 说明 token 验证失败
       // 可以直接跳转到登录页面，重新登录获取 token
@@ -63,15 +72,14 @@ Axios.interceptors.response.use(
     } else if (error.response.status === 500) {
       // 服务器错误
       // do something
-      console.log("error:",error.response.data)
-      if(error.response.data){
+      console.log("error:", error.response.data);
+      if (error.response.data) {
         return Promise.reject(error.response.data);
       }
-      
     }
     // 返回 response 里的错误信息
-    if(error.response.data){
-      console.log("error:",error.response.data)
+    if (error.response.data) {
+      console.log("error:", error.response.data);
       return Promise.reject(error.response.data);
     }
   }

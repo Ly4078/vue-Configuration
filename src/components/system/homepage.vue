@@ -19,7 +19,7 @@
       </el-header>
       <el-container>
         <el-aside width="200px">
-          <el-menu default-active="2" class="el-menu-vertical-demo" @select="handleSelect">
+          <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleSelect">
             <el-menu-item v-for="item in menulist" :key="item.id" :index="item.id">
               <router-link :to="item.href">
                 <i class="el-icon-menu"></i>
@@ -88,7 +88,6 @@ export default {
         this.$store.commit("setshopInfo", {});
         this.$store.commit("setToken", "");
         localStorage.setItem("TOKEN", "");
-        console.log("aa");
         this.$router.push({ name: "Login" });
       }
     },
@@ -101,6 +100,9 @@ export default {
     console.log("store:", this.$store.state);
     if (!this.$store.state.token) {
       this.$router.push({ name: "Login" });
+    }else{
+        console.log('133213213213')
+        // this.$router.push({ name: "Home/Shop" });
     }
   }
 };
@@ -160,11 +162,8 @@ export default {
       }
     }
     main {
-      float: right;
-      font-size: 100px;
-      color: red;
-      width: 100%;
-      height: 100%;
+      background: #ebebeb;
+      padding: 0 0 0 10px;
     }
   }
 }

@@ -11,8 +11,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'https://www.xiang7.net/',  //正式服
-        // target:'http://120.78.70.187:9081/',     //测试服
+        // target: 'https://www.xiang7.net/',  //正式服
+        target:'http://120.78.70.187:9081/',     //测试服
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

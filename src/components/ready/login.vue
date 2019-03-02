@@ -10,7 +10,7 @@
         class="demo-ruleForm"
       >
         <el-form-item label="账号：" prop="mobile">
-          <el-input v-model.number="ruleForm.mobile" maxlength="11" placeholder="请输入注册手机号"></el-input>
+          <el-input v-model.number="ruleForm.mobile" maxlength="11" :autofocus="true" placeholder="请输入注册手机号" @keyup.enter.native="getvercode"></el-input>
         </el-form-item>
         <el-form-item label="密码：" prop="verification" v-show="isverification">
           <el-input v-model="ruleForm.verification" maxlength="4" placeholder="请输入手机验证码"></el-input>
@@ -96,6 +96,11 @@ export default {
           .post("webApprove/auth/sendForShopAppRegister", _parms)
           .then(res => {
             this.isverification = res.data.data.verifyId;
+
+            // 此为开发调试提高效率用，上线务必删除
+            this.ruleForm.verification = res.data.data.verifyId;
+            this.checkCode();
+            // 此为开发调试提高效率用，上线务必删除
           });
       }
     },
