@@ -360,9 +360,6 @@ export default {
       options: []
     };
   },
-  props: {
-    id: String
-  },
   watch: {
     isspike: function() {
       if (!this.isspike && !this.isbargain) {
@@ -829,12 +826,15 @@ export default {
   width: 98%;
   height: 98%;
   padding: 1%;
-  max-height: 700px;
+  // max-height: 700px;
   overflow-y: auto;
   margin: 0 auto;
   background: #fff;
   .el-form-item__label {
     color: #409eff;
+  }
+  .el-cascader{
+    float: left;
   }
   .el-form-item__content {
     width: 80%;

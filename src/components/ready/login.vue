@@ -16,7 +16,7 @@
           <el-input v-model="ruleForm.verification" maxlength="4" placeholder="请输入手机验证码"></el-input>
         </el-form-item>
         <el-form-item v-show="isverification">
-          <el-button type="primary" @click="submitForm('ruleForm')">登陆</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')" v-loading="loading">登陆</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
         <el-button type="primary" plain @click="getvercode" v-show="!isverification">获取验证码</el-button>
@@ -40,6 +40,7 @@ export default {
   name: "Login",
   data() {
     return {
+      loading:false,
       isverification: "",
       ruleForm: {
         mobile: "",
@@ -64,12 +65,12 @@ export default {
   methods: {
     handtoken() {
       this.$store.commit("setToken", this.msg);
-      console.log('----------------------测试');
     },
     //点击登陆，校验表单
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          this.loading=true;
           this.checkCode();
         } else {
           console.log("error submit!!");
@@ -99,6 +100,7 @@ export default {
 
             // 此为开发调试提高效率用，上线务必删除
             this.ruleForm.verification = res.data.data.verifyId;
+            this.loading=true;
             this.checkCode();
             // 此为开发调试提高效率用，上线务必删除
           });
@@ -157,6 +159,7 @@ export default {
         if (_shopInfo.shopId) {
           this.getshopInfo();
         } else {
+          this.loading=false;
           this.$confirm(
             "该用户暂未绑定商户，是否进入商户入驻流程入驻?",
             "提示",
@@ -182,10 +185,9 @@ export default {
       this.$http
         .get("website/shop/approve/get/" + this.$store.state.userInfo.shopId)
         .then(res => {
+          this.loading=false;
           this.$store.commit("setshopInfo", res.data.data);
-          this.$router.push({
-            name: "Home"
-          });
+          this.$router.push({ path: '/Home/Shop', params: {}});
         });
     }
   }

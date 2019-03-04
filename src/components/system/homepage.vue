@@ -19,7 +19,7 @@
       </el-header>
       <el-container>
         <el-aside width="200px">
-          <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleSelect">
+          <el-menu default-active="1" class="el-menu-vertical-demo">
             <el-menu-item v-for="item in menulist" :key="item.id" :index="item.id">
               <router-link :to="item.href">
                 <i class="el-icon-menu"></i>
@@ -29,7 +29,7 @@
           </el-menu>
         </el-aside>
         <el-container>
-          <el-main>
+          <el-main v-bind:style="{height: this.$store.state.mainHeight}">
             <router-view></router-view>
           </el-main>
         </el-container>
@@ -90,18 +90,13 @@ export default {
         localStorage.setItem("TOKEN", "");
         this.$router.push({ name: "Login" });
       }
-    },
-    handleSelect(key, keyPath) {
-      console.log("key:", key);
-      console.log("keyPath:", keyPath);
     }
   },
   created() {
-    console.log("store:", this.$store.state);
     if (!this.$store.state.token) {
       this.$router.push({ name: "Login" });
     }else{
-        console.log('133213213213')
+      //开发高度时关闭，上线放开注释
         // this.$router.push({ name: "Home/Shop" });
     }
   }
@@ -164,6 +159,7 @@ export default {
     main {
       background: #ebebeb;
       padding: 0 0 0 10px;
+      overflow-y: auto;
     }
   }
 }

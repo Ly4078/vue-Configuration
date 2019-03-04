@@ -8,10 +8,10 @@
         :plain="status==item.id?false:true"
         @click="handtab(item.id)"
       >{{item.label}}</el-button>
+      <el-button type="primary" @click="handadd" v-show="status ==1">新增享七券</el-button>
     </div>
     <div class="marcont" v-show="status ==1">
-      <el-button type="primary" @click="handadd">新增享七券</el-button>
-      <el-table v-loading="loading" height="700" :data="voucher" border style="width: 100%">
+      <el-table v-loading="loading" :height="this.$store.state.tableHeight" :data="voucher" border style="width: 100%">
         <el-table-column prop="goodsSkuCode" align="center" label="编号"></el-table-column>
         <el-table-column prop="goodsSkuName" align="center" label="名称"></el-table-column>
         <el-table-column prop="ruleDesc" align="center" label="说明"></el-table-column>
@@ -167,7 +167,6 @@ export default {
         this.getactlist();
       }
     },
-
     //获取券列表
     getvoucherlist() {
       this.loading = true;
@@ -185,7 +184,6 @@ export default {
     },
     //点击删除某条数据
     handledel(val) {
-      console.log(val);
       this.$confirm("是否确定删除此条数据?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -271,7 +269,6 @@ export default {
           if(this.actlist.length>0){
               this.itemobj=this.actlist[0];
           }
-          console.log("actlist:", this.actlist);
         });
     }
   },

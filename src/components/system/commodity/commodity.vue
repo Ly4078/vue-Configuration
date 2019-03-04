@@ -10,7 +10,7 @@
       >{{item.label}}</el-button>
     </div>
     <div class="commcont" v-show="status==1 || status==2">
-      <el-table v-loading="loading" height="700" :data="goddslist" border style="width: 100%">
+      <el-table v-loading="loading" :height="this.$store.state.tableHeight" :data="goddslist" border style="width: 100%">
         <el-table-column prop="skuName" align="center" label="商品名称"></el-table-column>
         <el-table-column align="center" label="商品图片">
           <template slot-scope="scope">
@@ -50,12 +50,12 @@
         ></el-pagination>
       </span>
     </div>
-    <div class="commcont" v-show="status==3">
+    <div class="commcont" v-show="status==3" v-bind:style="{height: this.$store.state.tableHeight}">
       <div class="child">
         <Upload/>
       </div>
     </div>
-    <el-dialog title="编辑商品" :visible.sync="dialogTableVisible" :modal-append-to-body="false" width="80%" top="5%">
+    <el-dialog title="编辑商品" :visible.sync="dialogTableVisible" :modal-append-to-body="false" width="80%" top="2%">
       <div class="child" v-if="dialogTableVisible">
         <Upload :id="id" v-on:closedia="closedia"/>
       </div>
@@ -129,7 +129,6 @@ export default {
         .then(res => {
           let _list = res.data.data.list;
           this.total = res.data.data.total;
-          console.log("total:", this.total);
           if (_list.length > 0) {
             for (let i in _list) {
               if (_list[i].actGoodsSkuOuts && _list[i].actGoodsSkuOuts.length) {
@@ -160,7 +159,6 @@ export default {
           }
           this.loading = false;
           this.goddslist = _list;
-          console.log("goddslist:", this.goddslist);
         });
     },
     handleCurrentChange(val) {
@@ -208,13 +206,13 @@ export default {
 <style lang="less">
 .commodity {
   width: 98%;
-  height: 96%;
   padding: 1%;
   .martop {
     text-align: left;
     margin-bottom: 14px;
   }
   .commcont {
+    overflow-y: auto;
     .tickimg {
       width: 80px;
       height: 80px;

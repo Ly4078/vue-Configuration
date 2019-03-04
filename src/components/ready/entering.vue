@@ -1,14 +1,14 @@
 <template>
   <div class="entering">
-      <header>商户入驻</header>
-    <div class="settled-progress">
+    <header v-if="!isrevise">商户入驻</header>
+    <div class="settled-progress" v-if="!isrevise">
       <el-steps space="33%" :active="stepnum" finish-status="success">
         <el-step v-for="item in stepobj" :key="item.id" :title="item.title"></el-step>
       </el-steps>
     </div>
 
     <div class="settled-basicinfo ui-width" v-if="stepnum==1">
-      <header class="panel-head">
+      <header class="panel-head" v-if="!isrevise">
         填写基本信息
         <span>
           （带
@@ -17,11 +17,11 @@
       </header>
       <div class="shopInfo">
         <el-form ref="shopInfo" :rules="rules" :model="shopInfo" label-width="120px">
-          <span class="h2title">客户信息--</span>
+          <span class="h2title">店铺信息--</span>
           <el-form-item label="商户名称：" prop="shopName">
             <el-input v-model="shopInfo.shopName" placeholder="请输入商户名称"></el-input>
           </el-form-item>
-          <el-form-item label="联系人：" prop="contact">
+          <el-form-item label="联系人：" prop="contact" v-if="!isrevise">
             <el-input v-model="shopInfo.contact" placeholder="请输入联系人姓名"></el-input>
           </el-form-item>
           <el-form-item label="联系电话：" prop="mobile">
@@ -60,76 +60,82 @@
               </el-form-item>
             </el-col>
           </el-form-item>
+          <el-form-item label="店铺简介：" v-if="isrevise">
+            <el-input type="textarea" :rows="2" placeholder="请输入店铺简介" v-model="shopInfo.synopsis"></el-input>
+          </el-form-item>
+          <el-form-item label="选择商圈：" v-if="isrevise">
+            <el-cascader :options="ringdata" v-model="selectedOptions" @change="handleChange"></el-cascader>
+          </el-form-item>
           <span class="h2title">资质信息--</span>
           <el-form-item label="图片信息：" required>
             <ul class="imgul">
-              <el-col :span="5">
+              <el-col :span="5" v-if="!isrevise">
                 <el-form-item prop="licensePic" v-loading="loading">
                   <li class="imgli">
-                    <p>1.营业执照</p>
+                    <p>营业执照</p>
                     <el-upload
                       class="avatar-uploader"
                       action="#"
                       :show-file-list="false"
                       :before-upload="beforeAvatarUpload"
                     >
-                      <img v-if="shopInfo.licensePic" :src="shopInfo.licensePic" class="avatar">
+                      <img v-if="shopInfo.licensePic" :src="shopInfo.licensePic" class="avatar" @click="handfile(1)">
                       <i v-else class="el-icon-plus avatar-uploader-icon" @click="handfile(1)"></i>
                     </el-upload>
-                    <div class="legend">点击上传营业执照</div>
                   </li>
                 </el-form-item>
+                <div class="legend" @click="stopupload">停止上传</div>
               </el-col>
-              <el-col :span="5">
+              <el-col :span="5" v-if="!isrevise">
                 <el-form-item prop="doorPic" v-loading="loading2">
                   <li class="imgli">
-                    <p>2.卫生许可证</p>
+                    <p>卫生许可证</p>
                     <el-upload
                       class="avatar-uploader"
                       action="#"
                       :show-file-list="false"
                       :before-upload="beforeAvatarUpload"
                     >
-                      <img v-if="shopInfo.doorPic" :src="shopInfo.doorPic" class="avatar">
+                      <img v-if="shopInfo.doorPic" :src="shopInfo.doorPic" class="avatar"  @click="handfile(2)">
                       <i v-else class="el-icon-plus avatar-uploader-icon" @click="handfile(2)"></i>
                     </el-upload>
-                    <div class="legend">点击上传卫生许可证</div>
                   </li>
                 </el-form-item>
+                <div class="legend" @click="stopupload">停止上传</div>
               </el-col>
               <el-col :span="5">
                 <el-form-item prop="healthPic" v-loading="loading3">
                   <li class="imgli">
-                    <p>3.门头照</p>
+                    <p>门头照</p>
                     <el-upload
                       class="avatar-uploader"
                       action="#"
                       :show-file-list="false"
                       :before-upload="beforeAvatarUpload"
                     >
-                      <img v-if="shopInfo.healthPic" :src="shopInfo.healthPic" class="avatar">
+                      <img v-if="shopInfo.healthPic" :src="shopInfo.healthPic" class="avatar" @click="handfile(3)">
                       <i v-else class="el-icon-plus avatar-uploader-icon" @click="handfile(3)"></i>
                     </el-upload>
-                    <div class="legend">点击上传门头照</div>
                   </li>
                 </el-form-item>
+                <div class="legend" @click="stopupload">停止上传</div>
               </el-col>
               <el-col :span="5">
                 <el-form-item prop="logoPic" v-loading="loading4">
                   <li class="imgli">
-                    <p>4.logo</p>
+                    <p>商家logo</p>
                     <el-upload
                       class="avatar-uploader"
                       action="#"
                       :show-file-list="false"
                       :before-upload="beforeAvatarUpload"
                     >
-                      <img v-if="shopInfo.logoPic" :src="shopInfo.logoPic" class="avatar">
+                      <img v-if="shopInfo.logoPic" :src="shopInfo.logoPic" class="avatar" @click="handfile(4)">
                       <i v-else class="el-icon-plus avatar-uploader-icon" @click="handfile(4)"></i>
                     </el-upload>
-                    <div class="legend">点击上传logo</div>
                   </li>
                 </el-form-item>
+                 <div class="legend" @click="stopupload">停止上传</div>
               </el-col>
             </ul>
             <span>
@@ -191,7 +197,7 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <div>
+            <div v-show="!isrevise">
               <el-radio-group v-model="radio">
                 <el-radio :label="1">
                   同意
@@ -199,7 +205,7 @@
                 </el-radio>
               </el-radio-group>
             </div>
-            <el-button type="primary" @click="submitForm('shopInfo')">提交审核</el-button>
+            <el-button type="primary" @click="submitForm('shopInfo')">{{isrevise?'保存修改':'提交审核'}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -232,11 +238,17 @@
       </div>
     </div>
 
-    <el-dialog title="享七商家服务协议" :visible.sync="dialogTableVisible">
+    <el-dialog title="享七商家服务协议" :visible.sync="dialogTableVisible" :modal-append-to-body="false">
       <iframe src="http://www.luhome.top/h5.html" frameborder="0" style="border:1px solid #409EFF;"></iframe>
     </el-dialog>
 
-    <el-dialog title="地图选点定位" :visible.sync="dialogmap" width="80%" top="1%">
+    <el-dialog
+      title="地图选点定位"
+      :visible.sync="dialogmap"
+      :modal-append-to-body="false"
+      width="80%"
+      top="1%"
+    >
       <Maptab v-on:getMapdata="getMapdata"></Maptab>
     </el-dialog>
   </div>
@@ -249,21 +261,35 @@ export default {
   name: "entering",
   data() {
     return {
-      stepnum: 3,
+      textarea: "",
+      cateI: "",
+      imageUrl: "",
+      addimg: "../../assets/images/addimg.png",
+      radio: 1,
       status: 2,
       filenum: 1,
-      addimg: "../../assets/images/addimg.png",
-      imageUrl: "",
-      radio: 1,
-      dialogTableVisible: false,
-      dialogmap: false,
+      stepnum: 1,
+      isfirst: true,
+      istoday: true,
+      isrevise: false,
       loading: false,
       loading2: false,
       loading3: false,
       loading4: false,
-      istoday: true,
-      cateI: "",
+      dialogmap: false,
+      dialogTableVisible: false,
       cateII: [],
+      ringdata: [],
+      selectedOptions: [],
+      week: [
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六",
+        "星期日"
+      ],
       stepobj: [
         {
           id: 0,
@@ -281,17 +307,8 @@ export default {
           description: "查看审核结果"
         }
       ],
-      week: [
-        "星期一",
-        "星期二",
-        "星期三",
-        "星期四",
-        "星期五",
-        "星期六",
-        "星期日"
-      ],
-      options: ["停车场", "包间", "WIFI", "音乐"],
       ercate: [],
+      options: ["停车场", "包间", "WIFI", "音乐"],
       catelist: [],
       shopInfo: {
         shopName: "",
@@ -319,7 +336,9 @@ export default {
         city: "",
         locationX: "",
         locationY: "",
-        address: ""
+        address: "",
+        synopsis: "",
+        shopZoneItemId: ""
       },
       rules: {
         shopName: [
@@ -413,7 +432,10 @@ export default {
       handler: function() {
         for (let i in this.catelist) {
           if (this.shopInfo.cateI == this.catelist[i].id) {
-            this.shopInfo.cateII = [];
+            if (this.isfirst) {
+              this.shopInfo.cateII = [];
+            }
+            this.isfirst = true;
             this.ercate = this.catelist[i].children;
           }
         }
@@ -448,8 +470,159 @@ export default {
   methods: {
     //初始化
     init() {
-      this.queryreview();
-      // this.getcategory();
+      if (this.$store.state.shopInfo && this.$store.state.shopInfo.id) {
+        this.isrevise = true;
+        this.assignment();
+        this.getring();
+        this.getcategory();
+      } else {
+        this.queryreview();
+      }
+    },
+    // 数据赋值转换
+    assignment() {
+      let _shopInfo = this.$store.state.shopInfo;
+      for (let key in _shopInfo) {
+        for (let ind in this.shopInfo) {
+          if (key == ind) {
+            this.shopInfo[ind] = _shopInfo[key];
+          }
+        }
+      }
+
+      if (this.$store.state.shopInfo.shopHours) {
+        let myDate = new Date();
+        let _hours = this.$store.state.shopInfo.shopHours.split(",");
+        let _week = _hours[0].split("至");
+        this.shopInfo.openstart = _week[0];
+        this.shopInfo.openend = _week[1];
+
+        let _date = _hours[1].split("至");
+        let _year = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
+        let _month = myDate.getMonth(); //获取当前月份(0-11,0代表1月)
+        let _day = myDate.getDate(); //获取当前日(1-31)
+
+        if (_date[1].indexOf("今日") > 0) {
+          this.istoday = true;
+        } else {
+          this.istoday = false;
+        }
+        _date[1] = _date[1].replace("次日", "");
+        let newstart = _date[0].split(":");
+        let newend = _date[1].split(":");
+        let _start =
+          _year +
+          "-" +
+          _month +
+          "-" +
+          _day +
+          "-" +
+          " " +
+          newstart[0] +
+          ":" +
+          newstart[1] +
+          ":00";
+        let _end =
+          _year +
+          "-" +
+          _month +
+          "-" +
+          _day +
+          "-" +
+          " " +
+          newend[0] +
+          ":" +
+          newend[1] +
+          ":00";
+        _start = new Date(_start);
+        _end = new Date(_end);
+
+        this.shopInfo.date1 = _start;
+        this.shopInfo.date2 = _end;
+      }
+
+      if (this.$store.state.shopInfo.otherService) {
+        this.shopInfo.otherService = this.$store.state.shopInfo.otherService.split(
+          ","
+        );
+      }
+      if(this.$store.state.shopInfo.logoUrl){
+         this.shopInfo.logoPic = this.$store.state.shopInfo.logoUrl;
+      }
+      if(this.$store.state.shopInfo.smallLogoUrl){
+        this.shopInfo.smallLogoPic = this.$store.state.shopInfo.smallLogoUrl;
+      }
+      if(this.$store.state.shopInfo.indexUrl){
+        this.shopInfo.healthPic = this.$store.state.shopInfo.indexUrl;
+      }
+      if(this.$store.state.shopInfo.shopInfo){
+        this.shopInfo.synopsis = this.utf16toEntities(
+          this.$store.state.shopInfo.shopInfo
+        );
+      }
+      if(this.$store.state.shopInfo.shopZoneItem){
+        this.selectedOptions.push(this.$store.state.shopInfo.shopZoneItem.shopZoneId);
+        this.selectedOptions.push(this.$store.state.shopInfo.shopZoneItem.id);
+      }
+    },
+    //表情符转换
+    utf16toEntities(str) {
+      var patt = /[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+      str = str.replace(patt, function(char) {
+        var H, L, code;
+        if (char.length === 2) {
+          H = char.charCodeAt(0); // 取出高位
+          L = char.charCodeAt(1); // 取出低位
+          code = (H - 0xd800) * 0x400 + 0x10000 + L - 0xdc00; // 转换算法
+          return "&#" + code + ";";
+        } else {
+          return char;
+        }
+      });
+      return str;
+    },
+    assigcate() {
+      let cate = this.$store.state.shopInfo.shopCate.split("|");
+      let _cataI = "",
+        _cateII = [];
+      for (let i in cate) {
+        let cateitem = cate[i].split("-");
+        this.ercate = this.catelist[cateitem[0]].children;
+        _cataI = cateitem[0] * 1;
+
+        cateitem[1] *= 1;
+        _cateII.push(cateitem[1]);
+      }
+      this.isfirst = false;
+      this.shopInfo.cateI = _cataI;
+      this.shopInfo.cateII = _cateII;
+    },
+    //获取商圈数据
+    getring() {
+      const _Url =
+        "app/shopZone/listAllShopZone?city=" + this.$store.state.shopInfo.city;
+      this.$http.get(_Url).then(res => {
+        let _data = res.data.data;
+        if (_data && _data.length > 0) {
+          for (let i in _data) {
+            _data[i].label = _data[i].regionName;
+            _data[i].value = _data[i].id;
+            _data[i].children = _data[i].shopZoneItem;
+            if (_data[i].children && _data[i].children.length > 0) {
+              for (let j in _data[i].children) {
+                _data[i].children[j].label = _data[i].children[j].name;
+                _data[i].children[j].value = _data[i].children[j].id;
+              }
+              let _obj = {
+                label: "无",
+                value: ""
+              };
+              _data[i].children.push(_obj);
+            }
+          }
+        }
+        this.ringdata = _data;
+      });
     },
     //查询当前审核进度
     queryreview() {
@@ -486,12 +659,27 @@ export default {
     //获取分类信息
     getcategory() {
       this.$http.get("app/shopCategory/list").then(res => {
+        let _list = res.data.data;
         this.catelist = res.data.data;
+        if (this.isrevise) {
+          this.assigcate();
+        }
       });
     },
-    //p判斷当前所上传图片字段
+    //选择商圈
+    handleChange(value) {
+      console.log(value);
+    },
+    //判斷当前所上传图片字段
     handfile(val) {
       this.filenum = val;
+    },
+    //停止上传
+    stopupload(){
+      this.loading = false;
+      this.loading2 = false;
+      this.loading3 = false;
+      this.loading4 = false;
     },
     //图片上传
     beforeAvatarUpload(file) {
@@ -565,11 +753,13 @@ export default {
     //保存提交列表
     saveshop() {
       let _parms = {},
+        _parms1 = {},
+        _parms2 = {},
         _value = "",
         _shopHours = "",
         _istoday = "",
         _Cate = "",
-        _Url = "/api/website/shopEnter/add";
+        _Url = "";
       _istoday = this.istoday ? "" : "次日";
       _shopHours =
         this.shopInfo.openstart +
@@ -589,15 +779,10 @@ export default {
       }
       _Cate = _Cate.substring(0, _Cate.length - 1);
       _parms = {
-        licensePic: this.shopInfo.licensePic,
-        doorPic: this.shopInfo.doorPic,
         mobile: this.shopInfo.mobile,
         locationY: this.shopInfo.locationY,
-        logoPic: this.shopInfo.licensePic,
         shopCate: _Cate,
-        healthPic: this.shopInfo.healthPic,
         shopHours: _shopHours,
-        smallLogoPic: this.shopInfo.licensePic,
         userName: this.$store.state.userInfo.userName,
         address: this.shopInfo.address,
         city: this.shopInfo.city,
@@ -605,10 +790,49 @@ export default {
         otherService: this.shopInfo.otherService.join(","),
         locationX: this.shopInfo.locationX
       };
-      console.log("_parms:", _parms);
-      this.$http.post("app/shopEnter/add", _parms).then(res => {
-        this.$message.success("提交成功，请等待审核");
-        this.queryreview();
+      if (this.isrevise) {
+        _parms1 = {
+          id: this.$store.state.shopInfo.id,
+          phone: "", //1
+          indexUrl: this.shopInfo.healthPic,
+          logoUrl: this.shopInfo.logoPic,
+          shopInfo: this.shopInfo.synopsis,
+          shopZoneItemId: this.shopInfo.shopZoneItemId,
+          smallLogoUrl: this.shopInfo.smallLogoPic
+        };
+        Object.assign(_parms, _parms1);
+        _Url = "app/shop/update";
+      } else {
+        this.shopInfo.logoPic = this.$store.state.shopInfo.logoUrl;
+      this.shopInfo.smallLogoPic = this.$store.state.shopInfo.smallLogoUrl;
+        _parms2 = {
+          licensePic: this.shopInfo.licensePic,
+          doorPic: this.shopInfo.doorPic,
+          logoPic: this.shopInfo.logoPic,
+          healthPic: this.shopInfo.healthPic,
+          smallLogoPic: this.shopInfo.smallLogoPic,
+          userName: this.$store.state.userInfo.userName
+        };
+        Object.assign(_parms, _parms2);
+        _Url = "app/shopEnter/add";
+      }
+      this.$http.post(_Url, _parms).then(res => {
+        if (this.isrevise) {
+          this.$http
+            .get(
+              "website/shop/approve/get/" + this.$store.state.userInfo.shopId
+            )
+            .then(res => {
+              this.$store.commit("setshopInfo", res.data.data);
+              setTimeout(() => {
+                this.init();
+                this.$message.success("店铺信息修改更新成功");
+              }, 300);
+            });
+        } else {
+          this.$message.success("提交成功，请等待审核");
+          this.queryreview();
+        }
       });
     },
     //处理地图返回信息
@@ -647,14 +871,14 @@ export default {
   height: 100%;
   overflow-y: auto;
   margin-bottom: 200px;
-  header{
-      width: 100%;
-      height: 80px;
-      line-height: 80px;
-      margin:  0 auto;
-      text-align: center;
-      font-size: 30px;
-      color: #409EFF;
+  header {
+    width: 100%;
+    height: 80px;
+    line-height: 80px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 30px;
+    color: #409eff;
   }
   iframe {
     width: 100%;
@@ -702,6 +926,17 @@ export default {
     color: #409eff;
     text-align: left;
   }
+  .legend {
+      position: relative;
+      width: 30%;
+      cursor: pointer;
+      margin: 0 auto;
+      text-align: center;
+      background: #bebebe;
+      color: #fff;
+      border-radius: 0 0 5px 5px;
+      opacity: 0.9;
+    }
   .imgli {
     width: 100%;
     min-height: 200px;
@@ -729,17 +964,7 @@ export default {
       cursor: pointer;
     }
 
-    .legend {
-      position: relative;
-      width: 87%;
-      top: -57px;
-      margin: 0 auto;
-      text-align: center;
-      background: #bebebe;
-      color: #fff;
-      border-radius: 0 0 5px 5px;
-      opacity: 0.9;
-    }
+    
   }
   .el-dialog {
     border: 1px solid #409eff;

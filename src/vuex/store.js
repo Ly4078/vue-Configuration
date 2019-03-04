@@ -6,6 +6,9 @@ const state = {
     token: "",
     userInfo: {},
     shopInfo:{},
+    clientHeight:"",
+    mainHeight:"",
+    tableHeight:""
 }
 
 const mutations={
@@ -17,6 +20,15 @@ const mutations={
     },
     setshopInfo(state, data) {
         state.shopInfo = data;
+    },
+    setClientHeight(state, height) {
+        state.clientHeight = height;
+    },
+    setMainHeight(state, height){
+        state.mainHeight = height;
+    },
+    setTableHeight(state,height){
+        state.tableHeight = height;
     }
 }
 
