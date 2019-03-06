@@ -2,13 +2,13 @@
   <div class="marketing">
     <div class="martop">
       <el-button
-        type="success"
+        type="primary"
         v-for="item in typelist"
         :key="item.id"
         :plain="status==item.id?false:true"
         @click="handtab(item.id)"
       >{{item.label}}</el-button>
-      <el-button type="primary" @click="handadd" v-show="status ==1">新增享七券</el-button>
+      <el-button type="success" @click="handadd" v-show="status ==1">新增享七券</el-button>
     </div>
     <div class="marcont" v-show="status ==1">
       <el-table v-loading="loading" :height="this.$store.state.tableHeight" :data="voucher" border style="width: 100%">

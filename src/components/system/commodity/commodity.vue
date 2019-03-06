@@ -2,7 +2,7 @@
   <div class="commodity">
     <div class="martop">
       <el-button
-        type="success"
+        type="primary"
         v-for="item in typelist"
         :key="item.id"
         :plain="status==item.id?false:true"

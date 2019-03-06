@@ -2,19 +2,26 @@
   <div class="shop">
     <div class="martop">
       <el-button
-        type="success"
+        type="primary"
         v-for="item in typelist"
         :key="item.id"
         :plain="status==item.id?false:true"
         @click="handtab(item.id)"
       >{{item.label}}</el-button>
-      <el-button type="primary" @click="handadd" v-show="status==2">添加店员</el-button>
+      <el-button type="success" @click="qrcode" v-show="status==1">店铺二维码</el-button>
+      <el-button type="success" @click="handadd" v-show="status==2">添加店员</el-button>
     </div>
     <div class="shopcnets" v-show="status==1">
       <Entering :edit="edit" v-bind:style="{height: this.$store.state.tableHeight}"/>
     </div>
     <div class="shopcnets" v-show="status==2">
-      <el-table v-loading="loading" :height="this.$store.state.tableHeight" :data="clerklist" border style="width: 100%">
+      <el-table
+        v-loading="loading"
+        :height="this.$store.state.tableHeight"
+        :data="clerklist"
+        border
+        style="width: 100%"
+      >
         <el-table-column prop="nickName" align="center" label="昵称"></el-table-column>
         <el-table-column align="center" label="用户头像">
           <template slot-scope="scope">
@@ -27,36 +34,46 @@
         <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
             <el-tag v-show="scope.row.id==admin.cashierId">管理员</el-tag>
-            <el-button @click="handdel(scope.row)" type="primary" size="small" v-show="scope.row.id!=admin.cashierId">删除</el-button>
+            <el-button
+              @click="handdel(scope.row)"
+              type="primary"
+              size="small"
+              v-show="scope.row.id!=admin.cashierId"
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <el-dialog
-        title="添加店员"
-        :visible.sync="dialogVisible"
-        :modal-append-to-body="false"
-        width="30%"
-      >
+    </div>
+    <el-dialog
+      :title="status==1?'店铺二维码':'添加店员'"
+      :visible.sync="dialogVisible"
+      :modal-append-to-body="false"
+      width="30%"
+    >
+      <div v-show="status==1" id="qrcode"></div>
+      <div v-show="status==2">
         <el-input v-model="addmobile" :autofocus="true" placeholder="请输入店员的注册手机号"></el-input>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="determine">确 定</el-button>
         </span>
-      </el-dialog>
-    </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import Entering from "@/components/ready/entering";
+import QRCode from "qrcodejs2";
 export default {
   name: "shop",
   data() {
     return {
-      edit:"edit",
+      edit: "edit",
+      oldqrcode: null,
       addmobile: "",
       status: 1,
       loading: false,
+      dialog: false,
       dialogVisible: false,
       admin: {},
       clerklist: [],
@@ -77,6 +94,9 @@ export default {
   },
   watch: {
     dialogVisible: function() {
+      console.log("dialogVisible:", this.dialogVisible);
+    },
+    dialogVisible: function() {
       if (!this.dialogVisible) {
         this.addmobile = "";
       }
@@ -91,9 +111,9 @@ export default {
     //切换tab
     handtab(val) {
       this.status = val;
+      console.log("status:", this.status);
     },
     //查询管理员
-    // GET /app/shopCashier/adminByShopId?shopId=35
     getadmin() {
       const _Url =
         "app/shopCashier/adminByShopId?shopId=" + this.$store.state.shopInfo.id;
@@ -114,7 +134,27 @@ export default {
     },
     //点击添加店员按钮
     handadd() {
-      this.dialogVisible = !this.dialogVisible;
+      this.dialogVisible = true;
+    },
+    qrcode() {
+      this.dialogVisible = true;
+      const _text =
+        "https://www.xiang7.net/service?flag=1&shopCode=" +
+        this.$store.state.shopInfo.shopCode;
+      if (!this.oldqrcode) {
+        setTimeout(() => {
+          console.log("QRCode:", QRCode);
+          let _qrcode = new QRCode("qrcode", {
+            width: 240,
+            height: 240,
+            text: _text, // 二维码内容
+            colorDark: "#000",
+            colorLight: "#fff"
+          });
+          this.oldqrcode = _qrcode;
+          console.log("oldqrcode:", this.oldqrcode);
+        }, 50);
+      }
     },
     //点击确定添加店员按钮
     determine() {
@@ -197,7 +237,7 @@ export default {
   .shopcnets {
     padding: 1%;
     background: #fff;
-    .el-cascader{
+    .el-cascader {
       float: left;
     }
     .tickimg {
@@ -205,11 +245,16 @@ export default {
       height: 80px;
       border-radius: 10px;
     }
-    .entering{
+    .entering {
       width: 100%;
       padding: 0;
       margin: 0;
     }
+  }
+  #qrcode {
+    display: flex;
+    align-items: center; /*垂直居中*/
+    justify-content: center; /*水平居中*/
   }
 }
 </style>

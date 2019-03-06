@@ -499,7 +499,7 @@ export default {
 
         let _date = _hours[1].split("至");
         let _year = myDate.getFullYear(); //获取完整的年份(4位,1970-????)
-        let _month = myDate.getMonth(); //获取当前月份(0-11,0代表1月)
+        let _month = myDate.getMonth()+1; //获取当前月份(0-11,0代表1月)
         let _day = myDate.getDate(); //获取当前日(1-31)
 
         if (_date[1].indexOf("今日") > 0) {
@@ -981,7 +981,7 @@ export default {
     padding: 50px 0;
     color: #409eff;
   }
-  .el-input {
+  .el-input,.el-textarea {
     width: 90%;
     float: left;
   }
